@@ -26,12 +26,17 @@ connection.connect(function(err) {
 
 // function which prompts the user for what action they should take
 function start() {
+  console.log("\n");
   inquirer
     .prompt({
       name: "topOptions",
       type: "list",
-      message: "Would you like to [Add], [View] or [Update]?",
-      choices: ["Add", "View", "Update", "Exit"]
+      message: "Would you like to do?",
+      choices: [
+        "Add", 
+        "View",
+        "Update",
+        "Exit"]
     })
     .then(function(answer) {
       // based on their answer, either call the addEntry or viewEntry or updateEmployeeRole functions
@@ -42,7 +47,7 @@ function start() {
         viewEntry();
       } 
       else if(answer.topOptions === "Update") {
-        updateEmployeeRole();
+        updateEntry();
       }
       else{
         connection.end();
@@ -61,20 +66,15 @@ function addEntry() {
       choices: ["Employee", "Role", "Department", "Return"]
     })
     .then(function(answer) {
+      var table = new DBTable(connection);
       if (answer.entryType === "Employee") {
-        var table = new DBTable(connection, "employee",
-          ["first_name", "last_name", "role_id", "manager_id"]);
-        table.insertEntry(start);
+        table.insertEmployee(start);
       }
       else if(answer.entryType === "Role") {
-        var table = new DBTable(connection, "role",
-          ["title", "salary", "department_id"]);
-        table.insertEntry(start);
+        table.insertRole(start);
       } 
       else if(answer.entryType === "Department") {
-        var table = new DBTable(connection, "department",
-          ["name"]);
-        table.insertEntry(start);
+        table.insertDepartment(start);
       }
       else {
         start();
@@ -90,32 +90,46 @@ function viewEntry() {
       name: "entryType",
       type: "list",
       message: "Would you like to view [Employee], [Role] or [Department]?",
-      choices: ["Employee", "Role", "Department", "Return"]
+      choices: [
+        "Employee", "Role", "Department", "Return"
+      ]
     })
     .then(function(answer) {
+      var table = new DBTable(connection);
       if (answer.entryType === "Employee") {
-        var table = new DBTable(connection, "employee",
-          ["first_name", "last_name", "role_id", "manager_id"]);
-        table.viewEntry();
+        table.viewTable("employee", start);
       }
       else if(answer.entryType === "Role") {
-        var table = new DBTable(connection, "role",
-          ["title", "salary", "department_id"]);
-        table.viewEntry();
+        table.viewTable("role", start);
       } 
       else if(answer.entryType === "Department") {
-        var table = new DBTable(connection, "department",
-          ["name"]);
-        table.viewEntry();
+        table.viewTable("department", start);
+      } else {
+        start();
       }
-      start();
+      
     });
 }
 
 // function to handle update entry
-function updateEmployeeRole() {
-  var table = new DBTable(connection, "employee",
-          ["first_name", "last_name", "role_id", "manager_id"]);
-  table.viewEntry();
-  table.updateEntry("id", "role_id", start);
+function updateEntry() {
+  // prompt for info about the item type
+  inquirer
+    .prompt({
+      name: "entryType",
+      type: "list",
+      message: "Would you like to do?",
+      choices: [
+        "Update employee roles",
+        "Return"
+      ]
+    })
+    .then(function(answer) {
+      var table = new DBTable(connection);
+      if (answer.entryType === "Update employee roles") {
+        table.udpateEmployeeRole(start);
+      } else {
+        start();
+      }
+    });
 }

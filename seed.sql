@@ -26,5 +26,19 @@ CREATE TABLE department(
   PRIMARY KEY (id)
 );
 
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES (1, "Ruonan", "Yang", 1, 1);
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES (1, "Joyce", "Yang", 2, 1);
+
+INSERT INTO role (id, title, salary, department_id)
+VALUES (1, "Manager", 100, 1);
+INSERT INTO role (id, title, salary, department_id)
+VALUES (2, "Vice Manager", 100, 1);
+
+INSERT INTO department (id, name)
+VALUES (1, "CEO office");
+
 SELECT * FROM employee;
 SELECT * FROM department;
+SELECT * FROM role;
